@@ -1,5 +1,5 @@
-import { afterEach, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
+import { afterEach, expect, test } from "bun:test";
 
 import { app } from "~/app";
 

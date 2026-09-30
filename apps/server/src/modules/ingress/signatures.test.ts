@@ -1,5 +1,5 @@
-import { describe, expect, test } from "bun:test";
 import { createHmac } from "node:crypto";
+import { describe, expect, test } from "bun:test";
 
 import { SIGNATURE_TOLERANCE_SECONDS, SIGNATURE_VERIFIERS } from "./signatures";
 

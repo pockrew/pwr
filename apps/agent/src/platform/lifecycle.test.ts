@@ -1,5 +1,5 @@
-import { afterEach, expect, mock, test } from "bun:test";
 import { app } from "@agent/app";
+import { afterEach, expect, mock, test } from "bun:test";
 
 import { registerShutdown } from "./lifecycle";
 

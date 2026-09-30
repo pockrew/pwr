@@ -1,5 +1,5 @@
-import { afterEach, expect, spyOn, test } from "bun:test";
 import { app } from "@agent/app";
+import { afterEach, expect, spyOn, test } from "bun:test";
 
 import { loadTomlConfig, saveTomlConfig } from "@pockrew/pwr-core";
 import type { AgentUpdateStatus } from "@pockrew/pwr-shared/schemas";

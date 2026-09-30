@@ -1,8 +1,8 @@
-import { afterEach, expect, test } from "bun:test";
 import { mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { getLogger } from "@logtape/logtape";
+import { afterEach, expect, test } from "bun:test";
 
 import { redactLogValue } from "./redact";
 import { closeLogging, configureLogging } from "./setup";

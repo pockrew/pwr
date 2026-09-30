@@ -1,7 +1,7 @@
-import { mock } from "bun:test";
 import { mkdtempSync, rmSync } from "node:fs";
 import * as os from "node:os";
 import { join } from "node:path";
+import { mock } from "bun:test";
 
 // Server tests never open the development database; agent tests never use the user's cache/config.
 process.env["DB_FILE_NAME"] = ":memory:";

@@ -3,10 +3,10 @@
  * ports, a recording local target, and provider HTTP requests. Usage: `bun run smoke`
  * (`SMOKE_BASE_PORT`, default 28787, picks the port block). Logs are kept only on failure.
  */
-import { Database } from "bun:sqlite";
 import { mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { Database } from "bun:sqlite";
 
 import {
   createChecks,

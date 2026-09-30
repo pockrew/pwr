@@ -1,6 +1,6 @@
-import { afterAll, expect, test } from "bun:test";
 import { app } from "@agent/app";
 import { reset } from "@logtape/logtape";
+import { afterAll, expect, test } from "bun:test";
 
 import { loadTomlConfig } from "@pockrew/pwr-core";
 import type { LogPage, LogSettings } from "@pockrew/pwr-shared/schemas";

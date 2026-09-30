@@ -1,4 +1,3 @@
-import { afterEach, beforeEach, expect, test } from "bun:test";
 import { createHash } from "node:crypto";
 import { statSync } from "node:fs";
 import { createServer } from "node:http";
@@ -22,6 +21,7 @@ import {
 import { relayRoutes as localRelayRoutes } from "@agent/modules/relays/routes";
 import { AgentTunnelManager, tunnelManager } from "@agent/modules/relays/service";
 import type { AppEnv } from "@server/platform/types";
+import { afterEach, beforeEach, expect, test } from "bun:test";
 import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";

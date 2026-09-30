@@ -1,6 +1,6 @@
-import { Glob } from "bun";
 import { existsSync, realpathSync } from "node:fs";
 import { dirname, relative, resolve, sep } from "node:path";
+import { Glob } from "bun";
 import * as ts from "typescript/unstable/ast";
 import { API } from "typescript/unstable/async";
 

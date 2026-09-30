@@ -1,7 +1,7 @@
-import { SQLiteError } from "bun:sqlite";
 import { relayService } from "@server/modules/relays/service";
 import { AppError, forbiddenError, notFoundError } from "@server/platform/error.handlers";
 import type { Actor } from "@server/platform/types";
+import { SQLiteError } from "bun:sqlite";
 import { DrizzleQueryError } from "drizzle-orm";
 
 import { managementPage, normalizeEndpointPath } from "@pockrew/pwr-core";

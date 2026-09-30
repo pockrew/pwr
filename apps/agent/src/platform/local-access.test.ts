@@ -1,6 +1,6 @@
-import { describe, expect, it } from "bun:test";
 import { resolve } from "node:path";
 import { tunnelManager } from "@agent/modules/relays/service";
+import { describe, expect, it } from "bun:test";
 
 import { app } from "~/app";
 

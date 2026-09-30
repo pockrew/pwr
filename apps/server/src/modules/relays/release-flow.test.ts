@@ -1,6 +1,6 @@
-import { afterEach, beforeEach, expect, jest, test } from "bun:test";
 import { createHash } from "node:crypto";
 import type { IWsConnection } from "@server/modules/relays/service";
+import { afterEach, beforeEach, expect, jest, test } from "bun:test";
 import { sql } from "drizzle-orm";
 import { z } from "zod";
 

@@ -1,5 +1,5 @@
-import { afterAll, beforeAll, expect, test } from "bun:test";
 import { resolve } from "node:path";
+import { afterAll, beforeAll, expect, test } from "bun:test";
 
 import { app } from "@pockrew/pwr-agent/app";
 import { saveRelaySession } from "@pockrew/pwr-agent/testing";

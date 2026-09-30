@@ -1,4 +1,3 @@
-import type { ServerWebSocket } from "bun";
 import { db } from "@server/db/client";
 import {
   apiKeys,
@@ -20,6 +19,7 @@ import {
 } from "@server/modules/relays/delivery.service";
 import { env } from "@server/platform/env";
 import { log } from "@server/platform/logger.middleware";
+import type { ServerWebSocket } from "bun";
 import { and, eq, isNull, sql } from "drizzle-orm";
 
 import {

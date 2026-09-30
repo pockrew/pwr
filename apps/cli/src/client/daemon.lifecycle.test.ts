@@ -1,5 +1,5 @@
-import { afterEach, expect, test } from "bun:test";
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { afterEach, expect, test } from "bun:test";
 
 import { agentFilePaths } from "@pockrew/pwr-core";
 

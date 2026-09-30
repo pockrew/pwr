@@ -1,4 +1,3 @@
-import { afterEach, beforeEach, expect, test } from "bun:test";
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
@@ -9,6 +8,7 @@ import { agentStreamBroker } from "@agent/modules/relays/broker";
 import { getEndpointSecret, relayApiKey } from "@agent/modules/relays/credentials.repository";
 import { receiveRelayPackage, saveRelaySession } from "@agent/modules/relays/repository";
 import { tunnelManager } from "@agent/modules/relays/service";
+import { afterEach, beforeEach, expect, test } from "bun:test";
 import { z } from "zod";
 
 import {

@@ -1,7 +1,7 @@
-import { Database } from "bun:sqlite";
 import { chmodSync, existsSync, mkdirSync } from "node:fs";
 import { dirname } from "node:path";
 import { agentDbFile } from "@agent/platform/data-dir";
+import { Database } from "bun:sqlite";
 import { drizzle } from "drizzle-orm/bun-sqlite";
 
 import { migrateAgentDatabase } from "./migrate";

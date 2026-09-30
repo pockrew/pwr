@@ -1,7 +1,7 @@
-import { afterAll, expect, test } from "bun:test";
 import { mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { afterAll, expect, test } from "bun:test";
 
 import { closeLogging, configureLogging, parseLogLine } from "@pockrew/pwr-core";
 

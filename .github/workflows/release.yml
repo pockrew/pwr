@@ -1,33 +1,67 @@
 name: Release
 
+# Publishes a GitHub release when a pull request is merged into main (direct pushes never release),
+# once per root package.json version. Bump "version" and add a matching "## vX.Y.Z" CHANGELOG
+# section in the PR to ship a new release; merges without a version bump are skipped.
 on:
-  push:
-    tags: ["v*"]
+  pull_request:
+    types: [closed]
+    branches: [main]
 
 permissions:
   contents: write
 
+concurrency:
+  group: release
+  cancel-in-progress: false
+
 jobs:
   release:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.merge_commit_sha }}
+      - id: version
+        run: |
+          tag="v$(jq -r .version package.json)"
+          echo "tag=${tag}" >> "$GITHUB_OUTPUT"
+          if gh release view "${tag}" > /dev/null 2>&1; then
+            echo "${tag} is already released; skipping."
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.version.outputs.exists != 'true'
+        uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.4.0
-      - run: bun install --frozen-lockfile
-      - run: bun run typecheck
-      - run: bun run lint
-      - run: bun run lint:rules
-      - run: bun run notices:check
-      - run: bun test
+      - if: steps.version.outputs.exists != 'true'
+        run: bun install --frozen-lockfile
+      - if: steps.version.outputs.exists != 'true'
+        run: bun run typecheck
+      - if: steps.version.outputs.exists != 'true'
+        run: bun run lint
+      - if: steps.version.outputs.exists != 'true'
+        run: bun run lint:rules
+      - if: steps.version.outputs.exists != 'true'
+        run: bun run notices:check
+      - if: steps.version.outputs.exists != 'true'
+        run: bun test
       # Cross-compiles pwr and pwr-agent (Studio embedded) for macOS/Linux x64/arm64 + SHA256SUMS.
-      - run: bun scripts/release.ts "${GITHUB_REF_NAME}"
-      - name: Publish GitHub release
+      - if: steps.version.outputs.exists != 'true'
+        run: bun scripts/release.ts "${{ steps.version.outputs.tag }}"
+      - if: steps.version.outputs.exists != 'true'
+        name: Publish GitHub release
         env:
-          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.version.outputs.tag }}
         run: |
-          gh release create "${GITHUB_REF_NAME}" dist/release/* \
-            --title "PWR ${GITHUB_REF_NAME}" \
-            --notes-file CHANGELOG.md \
-            --verify-tag
+          # Release notes are this version's CHANGELOG section; fail if it is missing.
+          awk -v h="## ${TAG} " 'index($0, h) == 1 { on = 1; next } /^## / { on = 0 } on' CHANGELOG.md > notes.md
+          if [ ! -s notes.md ]; then echo "CHANGELOG.md has no '## ${TAG} ' section" >&2; exit 1; fi
+          gh release create "${TAG}" dist/release/* \
+            --title "PWR ${TAG}" \
+            --notes-file notes.md \
+            --target "${MERGE_SHA}"

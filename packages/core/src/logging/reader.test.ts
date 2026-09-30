@@ -1,4 +1,3 @@
-import { afterEach, beforeEach, expect, test } from "bun:test";
 import {
   appendFileSync,
   mkdtempSync,
@@ -9,6 +8,7 @@ import {
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { afterEach, beforeEach, expect, test } from "bun:test";
 
 import { formatLogEntry } from "./entry";
 import { readLogPage, readLogTail } from "./reader";

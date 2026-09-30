@@ -1,4 +1,3 @@
-import { afterEach, beforeEach, expect, jest, test } from "bun:test";
 import { db, localDb } from "@agent/db/client";
 import { localConfig, localEndpointSecrets, localRelayKeys } from "@agent/db/schemas";
 import { setEndpointTarget } from "@agent/modules/relays/credentials.repository";
@@ -11,6 +10,7 @@ import {
   receiveRelayPackage,
   relayReports,
 } from "@agent/modules/relays/repository";
+import { afterEach, beforeEach, expect, jest, test } from "bun:test";
 
 import { loadTomlConfig, RELAY_DEDUPE_DAYS, saveTomlConfig } from "@pockrew/pwr-core";
 import { RelayPackageSchema } from "@pockrew/pwr-shared/schemas";
