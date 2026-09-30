@@ -1,0 +1,30 @@
+{
+  "name": "@pockrew/pwr-core",
+  "private": true,
+  "license": "SEE LICENSE IN LICENSE",
+  "version": "0.1.0",
+  "author": {
+    "name": "Thinh Dam Hung",
+    "email": "thinhdh.dev@gmail.com"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "import": "./src/index.ts",
+      "types": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@logtape/file": "2.3.8",
+    "@logtape/logtape": "2.3.8",
+    "@pockrew/pwr-shared": "workspace:*",
+    "drizzle-orm": "^1.0.0-rc.4"
+  },
+  "devDependencies": {
+    "typescript": "7.0.2"
+  }
+}

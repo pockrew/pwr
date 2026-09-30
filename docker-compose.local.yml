@@ -1,0 +1,30 @@
+# ==============================================================================
+# PWR Agent in Docker (Linux only: host networking is required because the agent
+# binds to 127.0.0.1 and forwards to targets on the host).
+#
+#   docker compose -f docker-compose.local.yml up -d --build
+#
+# Then, on the host:  printf '%s' "$RELAY_KEY" | pwr connect <slug> --server https://your-server --api-key -
+# The CLI reads the agent token from the mounted data directory; set AGENT_DB_FILE_NAME
+# on the host to the same path if you run the CLI against this container.
+# ==============================================================================
+
+services:
+  agent:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.agent
+    container_name: pwr-agent
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      - NODE_ENV=production
+      - PWR_AGENT_HOST=127.0.0.1
+      - PWR_AGENT_PORT=18788
+      - AGENT_DB_FILE_NAME=/data/agent.db
+    volumes:
+      - pwr-agent-data:/data
+
+volumes:
+  pwr-agent-data:
+    driver: local

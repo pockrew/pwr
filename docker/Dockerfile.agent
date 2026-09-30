@@ -1,0 +1,63 @@
+# Linux only: the agent binds to loopback, so the container needs host networking.
+ARG BUN_VERSION=1.4.0
+
+# ==========================================
+# Stage 1: Build the Studio SPA
+# ==========================================
+FROM oven/bun:${BUN_VERSION}-alpine AS studio-builder
+WORKDIR /app
+
+COPY package.json bun.lock tsconfig.base.json tsconfig.json ./
+COPY apps/studio/package.json ./apps/studio/
+COPY apps/agent/package.json ./apps/agent/
+COPY apps/server/package.json ./apps/server/
+COPY packages/shared/package.json ./packages/shared/
+COPY packages/core/package.json ./packages/core/
+COPY packages/ui/package.json ./packages/ui/
+RUN bun install --frozen-lockfile
+
+COPY packages/shared ./packages/shared
+COPY packages/core ./packages/core
+COPY packages/ui ./packages/ui
+COPY apps/server ./apps/server
+COPY apps/agent ./apps/agent
+COPY apps/studio ./apps/studio
+RUN bun run --cwd apps/studio build
+
+# ==========================================
+# Stage 2: Agent runtime (non-root)
+# ==========================================
+FROM oven/bun:${BUN_VERSION}-alpine AS runner
+WORKDIR /app
+
+# All agent-private files (DB, token, lock, logs) live next to AGENT_DB_FILE_NAME.
+ENV NODE_ENV=production \
+    PWR_AGENT_HOST=127.0.0.1 \
+    PWR_AGENT_PORT=18788 \
+    AGENT_DB_FILE_NAME=/data/agent.db \
+    STUDIO_DIST_DIR=/app/studio
+
+COPY package.json bun.lock tsconfig.base.json tsconfig.json ./
+COPY apps/agent/package.json ./apps/agent/
+COPY packages/shared/package.json ./packages/shared/
+COPY packages/core/package.json ./packages/core/
+RUN bun install --frozen-lockfile --production
+
+# License terms and third-party notices for everything in this image.
+COPY LICENSE THIRD_PARTY_NOTICES.txt ./
+
+COPY packages/shared ./packages/shared
+COPY packages/core ./packages/core
+COPY apps/agent ./apps/agent
+COPY --from=studio-builder /app/apps/studio/dist /app/studio
+
+RUN mkdir -p /data && chown -R bun:bun /data && chmod 700 /data
+USER bun
+VOLUME ["/data"]
+
+EXPOSE 18788
+
+HEALTHCHECK --interval=10s --timeout=3s --start-period=10s --retries=3 \
+  CMD bun -e "fetch('http://127.0.0.1:18788/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
+
+CMD ["bun", "apps/agent/src/index.ts"]

@@ -1,0 +1,1 @@
+ALTER TABLE `ingress_signing` ADD `options` text;

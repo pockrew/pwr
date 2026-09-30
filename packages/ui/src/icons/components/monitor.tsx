@@ -1,0 +1,12 @@
+import type { Component } from "solid-js";
+
+import { IconBase, type IconProps } from "./icon-base";
+
+export const Monitor: Component<IconProps> = (props) => (
+  <IconBase {...props}>
+    <path d="M13 3H8C5.17157 3 3.75736 3 2.87868 3.87868C2 4.75736 2 6.17157 2 9V11C2 13.8284 2 15.2426 2.87868 16.1213C3.75736 17 5.17157 17 8 17H16C18.8284 17 20.2426 17 21.1213 16.1213C21.8897 15.3529 21.9862 14.175 21.9983 12"></path>
+    <path d="M14 21H16M14 21C13.1716 21 12.5 20.3284 12.5 19.5V17L12 17M14 21H10M10 21H8M10 21C10.8284 21 11.5 20.3284 11.5 19.5V17L12 17M12 17V21"></path>
+    <circle cx="19" cy="6" r="3"></circle>
+    <path d="M14 21H16M14 21C13.1716 21 12.5 20.3284 12.5 19.5V17L12 17M14 21H10M10 21H8M10 21C10.8284 21 11.5 20.3284 11.5 19.5V17L12 17M12 17V21"></path>
+  </IconBase>
+);

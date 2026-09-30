@@ -1,0 +1,61 @@
+# Pin the runtime; bump deliberately together with CI.
+ARG BUN_VERSION=1.4.0
+
+# ==========================================
+# Stage 1: Build the Admin SPA
+# ==========================================
+FROM oven/bun:${BUN_VERSION}-alpine AS admin-builder
+WORKDIR /app
+
+COPY package.json bun.lock tsconfig.base.json tsconfig.json ./
+COPY apps/admin/package.json ./apps/admin/
+COPY apps/server/package.json ./apps/server/
+COPY packages/shared/package.json ./packages/shared/
+COPY packages/core/package.json ./packages/core/
+COPY packages/ui/package.json ./packages/ui/
+RUN bun install --frozen-lockfile
+
+COPY packages/shared ./packages/shared
+COPY packages/core ./packages/core
+COPY packages/ui ./packages/ui
+COPY apps/server ./apps/server
+COPY apps/admin ./apps/admin
+RUN bun run --cwd apps/admin build
+
+# ==========================================
+# Stage 2: Server runtime (non-root)
+# ==========================================
+FROM oven/bun:${BUN_VERSION}-alpine AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production \
+    PORT=18787 \
+    DB_FILE_NAME=/app/data/pwr.sqlite
+
+COPY package.json bun.lock tsconfig.base.json tsconfig.json ./
+COPY apps/server/package.json ./apps/server/
+COPY packages/shared/package.json ./packages/shared/
+COPY packages/core/package.json ./packages/core/
+RUN bun install --frozen-lockfile --production
+
+# License terms and third-party notices for everything in this image.
+COPY LICENSE THIRD_PARTY_NOTICES.txt ./
+
+# .dockerignore excludes tests, .env files and local databases from these copies.
+COPY packages/shared ./packages/shared
+COPY packages/core ./packages/core
+COPY apps/server ./apps/server
+COPY --from=admin-builder /app/apps/admin/dist /app/apps/server/public
+
+# The `bun` user (uid 1000) ships with the image; only the data volume is writable.
+RUN mkdir -p /app/data && chown -R bun:bun /app/data
+USER bun
+VOLUME ["/app/data"]
+
+EXPOSE 18787
+
+# Readiness (DB reachable), not just process liveness. 127.0.0.1 avoids ::1 resolution on Alpine.
+HEALTHCHECK --interval=10s --timeout=3s --start-period=10s --retries=3 \
+  CMD bun -e "fetch('http://127.0.0.1:18787/api/ready').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
+
+CMD ["bun", "apps/server/src/index.ts"]

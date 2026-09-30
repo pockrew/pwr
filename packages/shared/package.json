@@ -1,0 +1,31 @@
+{
+  "name": "@pockrew/pwr-shared",
+  "private": true,
+  "license": "SEE LICENSE IN LICENSE",
+  "version": "0.1.0",
+  "author": {
+    "name": "Thinh Dam Hung",
+    "email": "thinhdh.dev@gmail.com"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "zod": "4.5.4"
+  },
+  "devDependencies": {
+    "typescript": "7.0.2"
+  },
+  "exports": {
+    "./schemas": {
+      "import": "./src/schemas/index.ts",
+      "types": "./src/schemas/index.ts"
+    },
+    "./libs": {
+      "import": "./src/libs/index.ts",
+      "types": "./src/libs/index.ts"
+    }
+  }
+}

@@ -1,0 +1,1525 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PWR — Pocket Webhook Relay</title>
+    <meta
+      name="description"
+      content="PWR is a self-hosted webhook relay. Your server stores every provider webhook; a local agent delivers it to localhost, keeps full history, and replays it on demand — even offline."
+    />
+    <meta property="og:title" content="PWR — Pocket Webhook Relay" />
+    <meta
+      property="og:description"
+      content="Every webhook, stored first. Delivered to localhost when you're ready. Self-hosted, byte-exact, replayable."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://pockrew.github.io/pwr/" />
+    <meta name="theme-color" content="#faf8f5" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#121110" media="(prefers-color-scheme: dark)" />
+    <link
+      rel="icon"
+      type="image/png"
+      href="data:image/png;base64,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"
+    />
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #faf8f5;
+        --bg-soft: #f3efe9;
+        --surface: #ffffff;
+        --text: #1a1715;
+        --muted: #655e57;
+        --border: #e6e0d8;
+        --accent: #b5623f;
+        --accent-strong: #97492a;
+        --accent-soft: #f6e7df;
+        --ok: #2f7d4f;
+        --fail: #b3372c;
+        --code-bg: #1a1715;
+        --code-text: #f3efe9;
+        --code-muted: #a39b93;
+        --shadow: 0 1px 2px rgb(26 23 21 / 6%), 0 12px 32px -12px rgb(26 23 21 / 18%);
+        --radius: 14px;
+        --sans:
+          ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+          sans-serif;
+        --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #121110;
+          --bg-soft: #181615;
+          --surface: #1c1a18;
+          --text: #f3efe9;
+          --muted: #aaa29a;
+          --border: #2e2a27;
+          --accent: #df8a61;
+          --accent-strong: #eea37f;
+          --accent-soft: #2b1f19;
+          --ok: #5fbf85;
+          --fail: #ef7a6e;
+          --code-bg: #0d0c0b;
+          --shadow: 0 1px 2px rgb(0 0 0 / 30%), 0 16px 40px -16px rgb(0 0 0 / 60%);
+        }
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+        -webkit-text-size-adjust: 100%;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font: 400 17px/1.6 var(--sans);
+        -webkit-font-smoothing: antialiased;
+      }
+      a {
+        color: inherit;
+      }
+      :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 3px;
+        border-radius: 4px;
+      }
+      code,
+      kbd,
+      pre {
+        font-family: var(--mono);
+      }
+      :where(p, li, .card, .promise) code {
+        font-size: 0.84em;
+        background: var(--bg-soft);
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        padding: 0.05em 0.35em;
+        white-space: nowrap;
+      }
+      .wrap {
+        width: min(1120px, 100% - 40px);
+        margin-inline: auto;
+      }
+      .skip {
+        position: absolute;
+        left: -999px;
+        top: 8px;
+        background: var(--text);
+        color: var(--bg);
+        padding: 8px 14px;
+        border-radius: 8px;
+        z-index: 10;
+      }
+      .skip:focus {
+        left: 12px;
+      }
+
+      /* Header */
+      header.site {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        backdrop-filter: saturate(160%) blur(12px);
+        background: color-mix(in srgb, var(--bg) 82%, transparent);
+        border-bottom: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+      }
+      .nav {
+        display: flex;
+        align-items: center;
+        gap: 28px;
+        height: 64px;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+        font-weight: 800;
+        letter-spacing: 0.18em;
+      }
+      .brand img {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+      }
+      .nav nav {
+        margin-left: auto;
+      }
+      .nav ul {
+        display: flex;
+        gap: 22px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        font-size: 15px;
+      }
+      .nav ul a {
+        text-decoration: none;
+        color: var(--muted);
+      }
+      .nav ul a:hover {
+        color: var(--text);
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 11px 18px;
+        border-radius: 999px;
+        font-weight: 600;
+        font-size: 15px;
+        text-decoration: none;
+        border: 1px solid transparent;
+        transition:
+          transform 0.15s ease,
+          background 0.15s ease;
+      }
+      .btn:hover {
+        transform: translateY(-1px);
+      }
+      .btn-primary {
+        background: var(--text);
+        color: var(--bg);
+      }
+      .btn-ghost {
+        border-color: var(--border);
+        background: var(--surface);
+      }
+      .btn svg {
+        width: 18px;
+        height: 18px;
+      }
+      .nav .btn {
+        padding: 8px 14px;
+        font-size: 14px;
+      }
+
+      /* Hero */
+      .hero {
+        padding: 88px 0 72px;
+        display: grid;
+        grid-template-columns: 1.2fr 1fr;
+        gap: 56px;
+        align-items: center;
+      }
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        color: var(--muted);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        padding: 5px 12px 5px 8px;
+        border-radius: 999px;
+      }
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--accent);
+        display: inline-block;
+      }
+      h1 {
+        font-size: clamp(38px, 4.8vw, 56px);
+        line-height: 1.04;
+        letter-spacing: -0.035em;
+        font-weight: 800;
+        margin: 22px 0 20px;
+      }
+      h1 em {
+        font-style: normal;
+        color: var(--accent);
+      }
+      .hero > * {
+        min-width: 0;
+      }
+      .lead {
+        font-size: 19px;
+        color: var(--muted);
+        max-width: 34em;
+        margin: 0 0 30px;
+      }
+      .cta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 28px;
+      }
+      .install {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--code-bg);
+        color: var(--code-text);
+        border-radius: 12px;
+        padding: 6px 6px 6px 16px;
+        font: 500 14px/1.4 var(--mono);
+        max-width: 100%;
+      }
+      .install code {
+        min-width: 0;
+        overflow-x: auto;
+        white-space: nowrap;
+        scrollbar-width: none;
+        flex: 1;
+      }
+      .install code::-webkit-scrollbar {
+        display: none;
+      }
+      .install .prompt {
+        color: var(--accent);
+        user-select: none;
+      }
+      .copy {
+        flex: none;
+        border: 0;
+        cursor: pointer;
+        font: 600 12px var(--sans);
+        color: var(--code-text);
+        background: rgb(255 255 255 / 10%);
+        border-radius: 8px;
+        padding: 8px 12px;
+      }
+      .copy:hover {
+        background: rgb(255 255 255 / 18%);
+      }
+      .fine {
+        font-size: 13px;
+        color: var(--muted);
+        margin-top: 12px;
+      }
+
+      /* Studio mock */
+      .studio {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+      .studio-bar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border);
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .studio-bar strong {
+        color: var(--text);
+        font-weight: 600;
+      }
+      .live {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-left: auto;
+        font-weight: 600;
+        color: var(--ok);
+      }
+      .live .dot {
+        background: var(--ok);
+        animation: pulse 2s ease-in-out infinite;
+      }
+      .rows {
+        list-style: none;
+        margin: 0;
+        padding: 6px;
+      }
+      .rows li {
+        display: grid;
+        grid-template-columns: 52px 1fr auto;
+        gap: 12px;
+        align-items: center;
+        padding: 11px 12px;
+        border-radius: 10px;
+        font: 13px/1.3 var(--mono);
+        opacity: 0;
+        animation: enter 0.5s ease forwards;
+      }
+      .rows li:nth-child(1) {
+        animation-delay: 0.2s;
+        background: var(--accent-soft);
+      }
+      .rows li:nth-child(2) {
+        animation-delay: 0.45s;
+      }
+      .rows li:nth-child(3) {
+        animation-delay: 0.7s;
+      }
+      .rows li:nth-child(4) {
+        animation-delay: 0.95s;
+      }
+      .rows li:nth-child(5) {
+        animation-delay: 1.2s;
+      }
+      .method {
+        font-weight: 700;
+        font-size: 11px;
+        letter-spacing: 0.04em;
+        color: var(--accent-strong);
+      }
+      .what {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .what small {
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .status {
+        font-weight: 700;
+      }
+      .status.ok {
+        color: var(--ok);
+      }
+      .status.fail {
+        color: var(--fail);
+      }
+      .replay {
+        font: 600 11px var(--sans);
+        color: var(--accent-strong);
+        border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+        border-radius: 999px;
+        padding: 2px 8px;
+        margin-left: 6px;
+      }
+      .studio-foot {
+        border-top: 1px solid var(--border);
+        padding: 12px 16px;
+        font: 12px/1.5 var(--mono);
+        color: var(--muted);
+        background: var(--bg-soft);
+      }
+      .studio-foot b {
+        color: var(--text);
+        font-weight: 600;
+      }
+
+      /* Sections */
+      section {
+        padding: 88px 0;
+      }
+      .band {
+        background: var(--bg-soft);
+        border-block: 1px solid var(--border);
+      }
+      .kicker {
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--accent-strong);
+        margin: 0 0 12px;
+      }
+      h2 {
+        font-size: clamp(30px, 3.6vw, 42px);
+        line-height: 1.12;
+        letter-spacing: -0.028em;
+        font-weight: 800;
+        margin: 0 0 16px;
+        max-width: 20em;
+      }
+      .intro {
+        color: var(--muted);
+        font-size: 18px;
+        max-width: 40em;
+        margin: 0 0 48px;
+      }
+      h3 {
+        font-size: 18px;
+        letter-spacing: -0.01em;
+        margin: 0 0 8px;
+      }
+
+      /* Pipeline */
+      .pipeline {
+        display: grid;
+        grid-template-columns: 1fr 64px 1fr 64px 1fr 64px 1fr;
+        align-items: stretch;
+      }
+      .node {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 22px 20px;
+        box-shadow: var(--shadow);
+      }
+      .node .tag {
+        font: 600 12px var(--mono);
+        color: var(--muted);
+      }
+      .node h3 {
+        margin-top: 6px;
+      }
+      .node p {
+        margin: 0;
+        font-size: 15px;
+        color: var(--muted);
+      }
+      .node.you {
+        border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+      }
+      .link {
+        position: relative;
+        align-self: center;
+        height: 2px;
+        background: repeating-linear-gradient(90deg, var(--border) 0 6px, transparent 6px 11px);
+      }
+      .link span {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        width: 10px;
+        height: 10px;
+        margin-top: -5px;
+        border-radius: 50%;
+        background: var(--accent);
+        box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 22%, transparent);
+        animation: travel 3.6s linear infinite;
+      }
+      .link:nth-of-type(4) span {
+        animation-delay: 1.2s;
+      }
+      .link:nth-of-type(6) span {
+        animation-delay: 2.4s;
+      }
+      .steps {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        margin-top: 40px;
+        counter-reset: step;
+      }
+      .steps div {
+        padding-top: 16px;
+        border-top: 1px solid var(--border);
+        font-size: 15px;
+        color: var(--muted);
+      }
+      .steps div::before {
+        counter-increment: step;
+        content: "0" counter(step);
+        display: block;
+        font: 700 13px var(--mono);
+        color: var(--accent-strong);
+        margin-bottom: 6px;
+      }
+      .steps strong {
+        color: var(--text);
+      }
+
+      /* Feature grid */
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 26px 24px;
+      }
+      .card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 15.5px;
+      }
+      .icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: grid;
+        place-items: center;
+        background: var(--accent-soft);
+        color: var(--accent-strong);
+        margin-bottom: 18px;
+      }
+      .icon svg {
+        width: 21px;
+        height: 21px;
+      }
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 14px;
+      }
+      .chips span {
+        font: 600 12px var(--mono);
+        padding: 3px 9px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        color: var(--text);
+      }
+
+      /* Terminal */
+      .split {
+        display: grid;
+        grid-template-columns: 1fr 1.15fr;
+        gap: 56px;
+        align-items: center;
+      }
+      .terminal {
+        background: var(--code-bg);
+        color: var(--code-text);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+      .terminal-bar {
+        display: flex;
+        gap: 7px;
+        padding: 13px 16px;
+        border-bottom: 1px solid rgb(255 255 255 / 8%);
+      }
+      .terminal-bar i {
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        background: rgb(255 255 255 / 16%);
+      }
+      .terminal pre {
+        margin: 0;
+        padding: 20px 22px 24px;
+        font-size: 13.5px;
+        line-height: 1.75;
+        overflow-x: auto;
+      }
+      .terminal .c {
+        color: var(--code-muted);
+      }
+      .terminal .p {
+        color: #df8a61;
+        user-select: none;
+      }
+      .terminal .o {
+        color: #7fd19b;
+      }
+      .checklist {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 14px;
+      }
+      .checklist li {
+        display: grid;
+        grid-template-columns: 24px 1fr;
+        gap: 12px;
+        color: var(--muted);
+      }
+      .checklist li strong {
+        color: var(--text);
+      }
+      .checklist svg {
+        width: 22px;
+        height: 22px;
+        color: var(--accent);
+        margin-top: 2px;
+      }
+
+      /* Guarantees */
+      .promises {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+      }
+      .promise {
+        border-left: 3px solid var(--accent);
+        padding: 4px 0 4px 18px;
+      }
+      .promise p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 15px;
+      }
+      .note {
+        margin-top: 36px;
+        font-size: 15px;
+        color: var(--muted);
+      }
+
+      /* FAQ */
+      .faq {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px 40px;
+      }
+      details {
+        border-bottom: 1px solid var(--border);
+        padding: 18px 0;
+      }
+      summary {
+        cursor: pointer;
+        font-weight: 650;
+        list-style: none;
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+      }
+      summary::-webkit-details-marker {
+        display: none;
+      }
+      summary::after {
+        content: "+";
+        color: var(--accent-strong);
+        font-weight: 700;
+      }
+      details[open] summary::after {
+        content: "–";
+      }
+      details p {
+        margin: 10px 0 0;
+        color: var(--muted);
+        font-size: 15.5px;
+      }
+
+      /* Final CTA + footer */
+      .final {
+        text-align: center;
+      }
+      .final h2 {
+        margin-inline: auto;
+      }
+      .final .intro {
+        margin-inline: auto;
+      }
+      .final .cta {
+        justify-content: center;
+      }
+      footer {
+        border-top: 1px solid var(--border);
+        padding: 36px 0 48px;
+        font-size: 14px;
+        color: var(--muted);
+      }
+      .foot {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px 36px;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .foot nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+      }
+      .foot a {
+        text-decoration: none;
+      }
+      .foot a:hover {
+        color: var(--text);
+      }
+
+      @keyframes enter {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      @keyframes pulse {
+        50% {
+          opacity: 0.35;
+        }
+      }
+      @keyframes travel {
+        0% {
+          left: 0;
+          opacity: 0;
+        }
+        10% {
+          opacity: 1;
+        }
+        30% {
+          left: calc(100% - 10px);
+          opacity: 1;
+        }
+        36%,
+        100% {
+          left: calc(100% - 10px);
+          opacity: 0;
+        }
+      }
+
+      @media (max-width: 960px) {
+        .hero,
+        .split {
+          grid-template-columns: 1fr;
+          gap: 44px;
+        }
+        .hero {
+          padding-top: 56px;
+        }
+        .grid,
+        .steps {
+          grid-template-columns: 1fr 1fr;
+        }
+        .promises {
+          grid-template-columns: 1fr 1fr;
+          gap: 28px 16px;
+        }
+        .pipeline {
+          grid-template-columns: 1fr;
+        }
+        .link {
+          width: 2px;
+          height: 40px;
+          justify-self: center;
+          background: repeating-linear-gradient(180deg, var(--border) 0 6px, transparent 6px 11px);
+        }
+        .link span {
+          left: 50%;
+          top: 0;
+          margin: 0 0 0 -5px;
+          animation-name: travel-down;
+        }
+        .nav ul {
+          display: none;
+        }
+        .nav .btn {
+          margin-left: auto;
+        }
+      }
+      @keyframes travel-down {
+        0% {
+          top: 0;
+          opacity: 0;
+        }
+        10% {
+          opacity: 1;
+        }
+        30% {
+          top: calc(100% - 10px);
+          opacity: 1;
+        }
+        36%,
+        100% {
+          top: calc(100% - 10px);
+          opacity: 0;
+        }
+      }
+      @media (max-width: 640px) {
+        body {
+          font-size: 16px;
+        }
+        section {
+          padding: 64px 0;
+        }
+        .grid,
+        .steps,
+        .faq,
+        .promises {
+          grid-template-columns: 1fr;
+        }
+        .rows li {
+          grid-template-columns: 44px 1fr auto;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        *,
+        *::before,
+        *::after {
+          animation: none !important;
+          transition: none !important;
+        }
+        .rows li {
+          opacity: 1;
+        }
+        .link span {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+
+    <header class="site">
+      <div class="wrap nav">
+        <a class="brand" href="#top" aria-label="PWR home">
+          <img
+            src="data:image/png;base64,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"
+            alt=""
+            width="30"
+            height="30"
+          />
+          PWR
+        </a>
+        <nav aria-label="Primary">
+          <ul>
+            <li><a href="#how">How it works</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#get-started">Get started</a></li>
+            <li><a href="#security">Security</a></li>
+            <li><a href="#faq">FAQ</a></li>
+          </ul>
+        </nav>
+        <a class="btn btn-ghost" href="https://github.com/pockrew/pwr">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path
+              d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.56-.29-5.25-1.28-5.25-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.43-2.7 5.4-5.26 5.69.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5Z"
+            />
+          </svg>
+          GitHub
+        </a>
+      </div>
+    </header>
+
+    <main id="main">
+      <div class="wrap hero" id="top">
+        <div>
+          <span class="eyebrow"
+            ><span class="dot" aria-hidden="true"></span>Self-hosted · v0.1</span
+          >
+          <h1>Every webhook, stored first. Delivered to <em>localhost</em> when you're ready.</h1>
+          <p class="lead">
+            PWR is a self-hosted webhook relay. Your server receives and stores provider webhooks; a
+            small agent on your machine delivers them to your local app, keeps the full history, and
+            replays any of them on demand, even offline.
+          </p>
+          <div class="cta">
+            <a class="btn btn-primary" href="#get-started">Get started</a>
+            <a class="btn btn-ghost" href="https://github.com/pockrew/pwr/blob/main/docs/guide.md"
+              >Read the guide</a
+            >
+          </div>
+          <div class="install" role="group" aria-label="Install command">
+            <code
+              ><span class="prompt">$ </span
+              ><span id="install-cmd"
+                >curl -fsSL https://raw.githubusercontent.com/pockrew/pwr/main/install.sh |
+                bash</span
+              ></code
+            >
+            <button class="copy" type="button" data-copy="install-cmd" aria-live="polite">
+              Copy
+            </button>
+          </div>
+          <p class="fine">
+            macOS and Linux (x64, arm64). The installer verifies SHA-256 checksums; no runtime
+            required.
+          </p>
+        </div>
+
+        <figure
+          class="studio"
+          aria-label="Studio showing recent webhook deliveries"
+          style="margin: 0"
+        >
+          <div class="studio-bar">
+            <strong>Studio</strong> · my-tunnel
+            <span class="live"><span class="dot" aria-hidden="true"></span>connected</span>
+          </div>
+          <ul class="rows">
+            <li>
+              <span class="method">POST</span>
+              <span class="what">push <small>· GitHub</small></span>
+              <span class="status ok">200</span>
+            </li>
+            <li>
+              <span class="method">POST</span>
+              <span class="what">invoice.paid <small>· Stripe</small></span>
+              <span class="status ok">200</span>
+            </li>
+            <li>
+              <span class="method">POST</span>
+              <span class="what"
+                >user.created <small>· Clerk</small><span class="replay">Replay</span></span
+              >
+              <span class="status fail">500</span>
+            </li>
+            <li>
+              <span class="method">POST</span>
+              <span class="what">orders/create <small>· Shopify</small></span>
+              <span class="status ok">200</span>
+            </li>
+            <li>
+              <span class="method">POST</span>
+              <span class="what">event_callback <small>· Slack</small></span>
+              <span class="status ok">200</span>
+            </li>
+          </ul>
+          <figcaption class="studio-foot">
+            → <b>http://127.0.0.1:3000/hooks</b> · x-pwr-delivery-id: 7f3c9a2e41b8
+          </figcaption>
+        </figure>
+      </div>
+
+      <section class="band" id="how" aria-labelledby="how-title">
+        <div class="wrap">
+          <p class="kicker">How it works</p>
+          <h2 id="how-title">A durable queue between the internet and your laptop.</h2>
+          <p class="intro">
+            Providers talk to a server you control. Your machine only ever makes an outbound
+            connection, so there is no inbound port to open and nothing is lost while you are away.
+          </p>
+          <div class="pipeline">
+            <div class="node">
+              <span class="tag">GitHub · Stripe · …</span>
+              <h3>Provider</h3>
+              <p>Sends a webhook to your public ingress URL.</p>
+            </div>
+            <div class="link" aria-hidden="true"><span></span></div>
+            <div class="node">
+              <span class="tag">docker compose</span>
+              <h3>Your server</h3>
+              <p>Verifies the key or signature, commits the event, answers 200.</p>
+            </div>
+            <div class="link" aria-hidden="true"><span></span></div>
+            <div class="node">
+              <span class="tag">WebSocket</span>
+              <h3>Local agent</h3>
+              <p>Stores each delivery in SQLite before acknowledging it.</p>
+            </div>
+            <div class="link" aria-hidden="true"><span></span></div>
+            <div class="node you">
+              <span class="tag">127.0.0.1:3000</span>
+              <h3>Your app</h3>
+              <p>Receives the original request, byte for byte.</p>
+            </div>
+          </div>
+          <div class="steps">
+            <div>
+              <strong>Stored before acknowledged.</strong> The server confirms only what it has
+              committed. Delivery preparation is separate and recovers after a crash.
+            </div>
+            <div>
+              <strong>Offline is normal.</strong> Laptop closed? Deliveries wait on your server and
+              drain in arrival order when the agent reconnects.
+            </div>
+            <div>
+              <strong>Inspect and replay.</strong> Every request and response stays on your machine.
+              Replay any delivery from Studio, the CLI, or an MCP client.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="features" aria-labelledby="features-title">
+        <div class="wrap">
+          <p class="kicker">Features</p>
+          <h2 id="features-title">Built for the webhook you need to debug at 2 a.m.</h2>
+          <p class="intro">
+            The small, boring guarantees that make webhook development predictable, in one
+            self-hosted package.
+          </p>
+          <div class="grid">
+            <article class="card">
+              <div class="icon" aria-hidden="true">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M16 18l6-6-6-6M8 6l-6 6 6 6" />
+                </svg>
+              </div>
+              <h3>Byte-exact payloads</h3>
+              <p>
+                Bodies are stored and forwarded as the original bytes: never parsed, re-serialized,
+                decompressed, or re-signed. Raw query strings survive too.
+              </p>
+            </article>
+            <article class="card">
+              <div class="icon" aria-hidden="true">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
+                  <path d="M3 3v5h5" />
+                </svg>
+              </div>
+              <h3>Replay, even offline</h3>
+              <p>
+                Re-send any stored delivery to the same endpoint with its current target and secret.
+                Each replay gets its own ID and never touches the original.
+              </p>
+            </article>
+            <article class="card">
+              <div class="icon" aria-hidden="true">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z" />
+                  <path d="M9 12l2 2 4-4" />
+                </svg>
+              </div>
+              <h3>Provider signatures</h3>
+              <p>
+                Use a scoped <code>x-api-key</code>, or verify the provider's own signature against
+                the raw body.
+              </p>
+              <div class="chips" aria-label="Supported signatures">
+                <span>GitHub</span><span>Stripe</span><span>Svix</span><span>Shopify</span
+                ><span>Slack</span><span>Custom HMAC</span>
+              </div>
+            </article>
+            <article class="card">
+              <div class="icon" aria-hidden="true">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <rect x="3" y="4" width="18" height="16" rx="2" />
+                  <path d="M3 9h18M8 14h4" />
+                </svg>
+              </div>
+              <h3>Studio inspector</h3>
+              <p>
+                A local UI for headers, bodies, responses, per-endpoint results and side-by-side
+                comparison, served by the agent on loopback.
+              </p>
+            </article>
+            <article class="card">
+              <div class="icon" aria-hidden="true">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M4 17l6-5-6-5M12 19h8" />
+                </svg>
+              </div>
+              <h3>CLI and MCP</h3>
+              <p>
+                Script everything with <code>pwr</code>. Give AI assistants read access to your
+                webhook history over MCP; replay stays off unless you enable it.
+              </p>
+            </article>
+            <article class="card">
+              <div class="icon" aria-hidden="true">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <circle cx="6" cy="12" r="2.5" />
+                  <circle cx="18" cy="6" r="2.5" />
+                  <circle cx="18" cy="18" r="2.5" />
+                  <path d="M8.3 11l7.4-3.8M8.3 13l7.4 3.8" />
+                </svg>
+              </div>
+              <h3>Routing and fan-out</h3>
+              <p>
+                Group endpoints into collections, route by path, and give each matching endpoint its
+                own delivery. Pause and resume without losing anything.
+              </p>
+            </article>
+            <article class="card">
+              <div class="icon" aria-hidden="true">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M12 3v12M8 11l4 4 4-4" />
+                  <path d="M5 21h14" />
+                </svg>
+              </div>
+              <h3>Durable by design</h3>
+              <p>
+                SQLite on both sides, stable IDs, idempotent ACKs. A result that could not be saved
+                is retried as a save, never as a second call to your app.
+              </p>
+            </article>
+            <article class="card">
+              <div class="icon" aria-hidden="true">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M4 6h16M4 12h10M4 18h6" />
+                  <path d="M17 15l3 3-3 3" />
+                </svg>
+              </div>
+              <h3>Edit config offline</h3>
+              <p>
+                Change collections and endpoints without a connection. Conflicts keep your local
+                version and wait for an explicit choice; timestamps never pick a winner.
+              </p>
+            </article>
+            <article class="card">
+              <div class="icon" aria-hidden="true">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <ellipse cx="12" cy="5" rx="8" ry="3" />
+                  <path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5" />
+                  <path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3" />
+                </svg>
+              </div>
+              <h3>Retention that keeps its promises</h3>
+              <p>
+                History is pruned by age and count, but never pending work or unreported results.
+                When the disk is full, intake stops safely instead of losing data.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="band" id="get-started" aria-labelledby="get-started-title">
+        <div class="wrap split">
+          <div>
+            <p class="kicker">Get started</p>
+            <h2 id="get-started-title">From install to your first delivery.</h2>
+            <p class="intro" style="margin-bottom: 28px">
+              Run the server with Docker behind your TLS proxy. Create a tunnel and two keys in
+              Admin, then connect the agent on your machine.
+            </p>
+            <ul class="checklist">
+              <li>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M5 12l5 5L20 7" />
+                </svg>
+                <span
+                  ><strong>Server:</strong> <code>cp .env.example .env</code> and
+                  <code>docker compose up -d</code>. Admin lives at <code>/admin</code>.</span
+                >
+              </li>
+              <li>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M5 12l5 5L20 7" />
+                </svg>
+                <span
+                  ><strong>Agent:</strong> one binary, loopback only, starts on login with
+                  <code>pwr agent install-service</code>.</span
+                >
+              </li>
+              <li>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M5 12l5 5L20 7" />
+                </svg>
+                <span
+                  ><strong>Provider:</strong> point it at
+                  <code>/ingress/my-tunnel/&lt;collection-id&gt;</code> with the inbound key or its
+                  signing secret.</span
+                >
+              </li>
+            </ul>
+          </div>
+          <div class="terminal" role="region" aria-label="Terminal session">
+            <div class="terminal-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+            <pre><code><span class="c"># start the agent and connect a tunnel</span>
+<span class="p">$ </span>pwr agent start
+<span class="p">$ </span>printf '%s' "$RELAY_KEY" | pwr connect my-tunnel \
+    --server https://hooks.example.com --api-key -
+<span class="o">● Connected</span> to server tunnel: my-tunnel
+
+<span class="c"># route a collection to your local app</span>
+<span class="p">$ </span>pwr collections create my-tunnel payments
+<span class="p">$ </span>pwr endpoints create my-tunnel &lt;collection-id&gt; \
+    --path /hooks --target http://127.0.0.1:3000/hooks
+
+<span class="c"># watch, inspect, replay</span>
+<span class="p">$ </span>pwr studio
+<span class="p">$ </span>pwr replay &lt;delivery-id&gt; --tunnel my-tunnel</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section id="security" aria-labelledby="security-title">
+        <div class="wrap split">
+          <div>
+            <p class="kicker">Security model</p>
+            <h2 id="security-title">Your targets and secrets never leave your machine.</h2>
+            <p class="intro" style="margin-bottom: 0">
+              The server routes by collection and path. It never sees your local URLs, target
+              credentials, or response bodies; it only learns whether a delivery succeeded.
+            </p>
+          </div>
+          <ul class="checklist">
+            <li>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <rect x="4" y="10" width="16" height="11" rx="2" />
+                <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+              </svg>
+              <span
+                ><strong>Agent-owned targets.</strong> Target URLs and secrets live only in the
+                agent's database, which is readable by your OS user alone.</span
+              >
+            </li>
+            <li>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <rect x="4" y="5" width="16" height="11" rx="1.5" />
+                <path d="M2 19h20" />
+              </svg>
+              <span
+                ><strong>Loopback only.</strong> The agent API binds to 127.0.0.1 and requires a
+                local token; Studio signs in with an HttpOnly cookie.</span
+              >
+            </li>
+            <li>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z" />
+              </svg>
+              <span
+                ><strong>Scoped keys.</strong> Separate inbound and outbound keys per tunnel, stored
+                as hashes; signing secrets are encrypted at rest.</span
+              >
+            </li>
+            <li>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+              <span
+                ><strong>Outbound only.</strong> The agent dials out over HTTPS/WSS. No inbound port
+                on your machine, and one owner per tunnel.</span
+              >
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="band" id="guarantees" aria-labelledby="guarantees-title">
+        <div class="wrap">
+          <p class="kicker">Honest guarantees</p>
+          <h2 id="guarantees-title">Exactly what PWR promises, and what it doesn't.</h2>
+          <p class="intro">No marketing math. These are the delivery semantics of v0.1.</p>
+          <div class="promises">
+            <div class="promise">
+              <h3>At least once</h3>
+              <p>
+                Every call carries <code>X-PWR-Delivery-Id</code> (and
+                <code>X-PWR-Replay-Of</code> for replays) so your handler can deduplicate.
+              </p>
+            </div>
+            <div class="promise">
+              <h3>In arrival order</h3>
+              <p>Deliveries on a tunnel run one at a time, in the order the server stored them.</p>
+            </div>
+            <div class="promise">
+              <h3>Retries collapse</h3>
+              <p>Provider retries with the same delivery ID are stored once per ingress URL.</p>
+            </div>
+            <div class="promise">
+              <h3>No silent retries</h3>
+              <p>A failed target call is recorded as failed. You decide when to replay it.</p>
+            </div>
+          </div>
+          <p class="note">
+            Not included in v0.1: automatic retries, Windows builds, horizontal server scaling, or
+            synchronous callbacks.
+            <a
+              href="https://github.com/pockrew/pwr/blob/main/docs/operations.md#known-limitations-v01"
+              >See all known limitations →</a
+            >
+          </p>
+        </div>
+      </section>
+
+      <section id="faq" aria-labelledby="faq-title">
+        <div class="wrap">
+          <p class="kicker">FAQ</p>
+          <h2 id="faq-title">Questions, answered.</h2>
+          <div class="faq">
+            <div>
+              <details>
+                <summary>Does my machine need to be online when webhooks arrive?</summary>
+                <p>
+                  No. Your server stores every event and keeps its deliveries pending. When the
+                  agent reconnects, it receives the backlog in order.
+                </p>
+              </details>
+              <details>
+                <summary>Can the server see my local URLs or secrets?</summary>
+                <p>
+                  No. Target URLs, target secrets, and response bodies stay in the agent's local
+                  database. The server only receives status, latency, and size.
+                </p>
+              </details>
+              <details>
+                <summary>Which providers are supported?</summary>
+                <p>
+                  Any provider that can send a custom <code>x-api-key</code> header, plus signed
+                  webhooks from GitHub, Stripe, Standard Webhooks/Svix (Clerk, Resend…), Shopify,
+                  Slack, and any provider that signs the raw body with a plain HMAC.
+                </p>
+              </details>
+            </div>
+            <div>
+              <details>
+                <summary>What do I need to run it?</summary>
+                <p>
+                  A small server with Docker behind a TLS reverse proxy, and a macOS or Linux
+                  machine for the agent. The agent and CLI are single binaries; both sides use
+                  SQLite.
+                </p>
+              </details>
+              <details>
+                <summary>Is PWR free?</summary>
+                <p>
+                  It is source-available under the PolyForm Noncommercial License with a Small
+                  Company Permission: free for personal and noncommercial use and for companies of
+                  10 or fewer people, including commercial work. Larger companies need a commercial
+                  license.
+                </p>
+              </details>
+              <details>
+                <summary>How do I move a tunnel to another machine?</summary>
+                <p>
+                  Connect the new agent with <code>--takeover</code> (or Take over in Studio). The
+                  previous agent stops reconnecting to that tunnel, so the two never fight over it.
+                </p>
+              </details>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="band final" aria-labelledby="final-title">
+        <div class="wrap">
+          <h2 id="final-title">Stop losing webhooks to a closed laptop.</h2>
+          <p class="intro">Install the agent, run the server, and replay your first event today.</p>
+          <div class="cta">
+            <a class="btn btn-primary" href="https://github.com/pockrew/pwr/releases"
+              >Download v0.1</a
+            >
+            <a class="btn btn-ghost" href="https://github.com/pockrew/pwr">Star on GitHub</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="wrap foot">
+        <span>PWR — Pocket Webhook Relay · © 2026 Pockrew</span>
+        <nav aria-label="Footer">
+          <a href="https://github.com/pockrew/pwr/blob/main/docs/guide.md">Guide</a>
+          <a href="https://github.com/pockrew/pwr/blob/main/docs/architecture.md">Architecture</a>
+          <a href="https://github.com/pockrew/pwr/blob/main/docs/api.md">API &amp; CLI</a>
+          <a href="https://github.com/pockrew/pwr/blob/main/docs/operations.md">Operations</a>
+          <a href="https://github.com/pockrew/pwr/blob/main/CHANGELOG.md">Changelog</a>
+          <a href="https://github.com/pockrew/pwr/blob/main/LICENSE">License</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script>
+      for (const button of document.querySelectorAll("[data-copy]")) {
+        button.addEventListener("click", async () => {
+          const text = document.getElementById(button.dataset.copy)?.textContent ?? "";
+          try {
+            await navigator.clipboard.writeText(text);
+            button.textContent = "Copied";
+          } catch {
+            button.textContent = "Select & copy";
+          }
+          setTimeout(() => (button.textContent = "Copy"), 1800);
+        });
+      }
+    </script>
+  </body>
+</html>

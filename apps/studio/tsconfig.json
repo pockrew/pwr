@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js",
+    "types": ["vite/client"],
+    "exactOptionalPropertyTypes": false,
+    "paths": {
+      "~/*": ["./src/*"],
+      "@agent/*": ["../agent/src/*"],
+      "@server/*": ["../server/src/*"],
+      "@core/*": ["../../packages/core/src/*"]
+    }
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx", "vite.config.ts"]
+}

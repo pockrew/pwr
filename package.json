@@ -1,0 +1,54 @@
+{
+  "name": "@pockrew/pwr",
+  "version": "0.1.0",
+  "private": true,
+  "license": "SEE LICENSE IN LICENSE",
+  "author": {
+    "name": "Thinh Dam Hung",
+    "email": "thinhdh.dev@gmail.com"
+  },
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "devDependencies": {
+    "@ianvs/prettier-plugin-sort-imports": "^4.7.1",
+    "@types/bun": "^1.4.2",
+    "concurrently": "10.0.5",
+    "drizzle-kit": "^1.0.0-rc.4",
+    "oxlint": "1.82.0",
+    "prettier": "^3.9.6",
+    "prettier-plugin-tailwindcss": "^0.8.1",
+    "typescript": "7.0.2"
+  },
+  "scripts": {
+    "dev": "concurrently -n server,studio,admin -c green,cyan,yellow \"bun run --cwd apps/server dev\" \"bun run --cwd apps/studio dev\" \"bun run --cwd apps/admin dev\"",
+    "dev:server": "bun run --cwd apps/server dev",
+    "dev:studio": "bun run --cwd apps/studio dev",
+    "dev:cli": "bun run --cwd apps/cli dev",
+    "build:studio": "bun run --cwd apps/studio build",
+    "build:admin": "bun run --cwd apps/admin build",
+    "build:server": "bun run build:admin && rm -rf apps/server/public && cp -r apps/admin/dist apps/server/public",
+    "build:binaries": "mkdir -p dist && bun build --compile --minify apps/cli/src/index.ts --outfile dist/pwr && bun build --compile --minify apps/agent/src/index.ts --outfile dist/pwr-agent",
+    "release": "bun scripts/release.ts",
+    "smoke": "bun scripts/smoke.ts && bun scripts/smoke-flows.ts",
+    "notices": "bun scripts/third-party-notices.ts",
+    "notices:check": "bun scripts/third-party-notices.ts --check",
+    "build:all": "bun run build:studio && bun run build:server && bun run build:binaries",
+    "docker:up": "docker compose up -d --build",
+    "docker:down": "docker compose down",
+    "typecheck": "bun x tsc --build --noEmit",
+    "lint": "bun run format:check && oxlint --deny-warnings apps packages scripts",
+    "lint:fix": "prettier --write . && oxlint --fix apps packages scripts",
+    "lint:rules": "bun scripts/dependencies/index.ts",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "dev:agent": "bun run --cwd apps/agent dev",
+    "dev:local": "concurrently -n agent,studio -c green,cyan \"bun run dev:agent\" \"bun run dev:studio\"",
+    "db:seed": "bun run --cwd apps/server db:seed"
+  },
+  "dependencies": {
+    "drizzle-orm": "^1.0.0-rc.4"
+  }
+}

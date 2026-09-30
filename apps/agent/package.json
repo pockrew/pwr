@@ -1,0 +1,36 @@
+{
+  "name": "@pockrew/pwr-agent",
+  "private": true,
+  "license": "SEE LICENSE IN LICENSE",
+  "version": "0.1.0",
+  "author": {
+    "name": "Thinh Dam Hung",
+    "email": "thinhdh.dev@gmail.com"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./app": "./src/app.ts",
+    "./rpc": "./src/rpc.ts",
+    "./testing": "./src/testing.ts"
+  },
+  "scripts": {
+    "dev": "NODE_ENV=development bun --watch src/index.ts",
+    "start": "NODE_ENV=production bun src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "db:generate": "drizzle-kit generate --config drizzle.config.ts"
+  },
+  "dependencies": {
+    "@hono/zod-validator": "0.9.1",
+    "@logtape/logtape": "2.3.8",
+    "@pockrew/pwr-core": "workspace:*",
+    "@pockrew/pwr-shared": "workspace:*",
+    "drizzle-orm": "^1.0.0-rc.4",
+    "hono": "4.13.7",
+    "zod": "4.5.4"
+  },
+  "devDependencies": {
+    "@types/bun": "1.4.2",
+    "typescript": "7.0.2",
+    "@pockrew/pwr-server": "workspace:*"
+  }
+}

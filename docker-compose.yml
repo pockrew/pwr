@@ -1,0 +1,45 @@
+# ==============================================================================
+# PWR Server (self-hosted)
+#
+#   cp .env.example .env   # then fill in the required values
+#   docker compose up -d --build
+#
+# Put the server behind a TLS-terminating reverse proxy and set PUBLIC_URL to its
+# https:// origin; set TRUSTED_PROXIES to the proxy's address so client IPs (rate
+# limits, IP allow/deny lists, admin sign-in throttling) are resolved correctly.
+#
+#   Admin UI:   ${PUBLIC_URL}/admin
+#   Ingress:    ${PUBLIC_URL}/ingress/:slug/:collectionId
+#   Relay:      ${PUBLIC_URL}/relay/:slug (WebSocket)
+#   Health:     ${PUBLIC_URL}/api/health, ${PUBLIC_URL}/api/ready
+# ==============================================================================
+
+services:
+  server:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.server
+    container_name: pwr-server
+    restart: unless-stopped
+    ports:
+      - "18787:18787"
+    environment:
+      - PORT=18787
+      - NODE_ENV=production
+      - DB_FILE_NAME=/app/data/pwr.sqlite
+      - PUBLIC_URL=${PUBLIC_URL:?PUBLIC_URL is required (the public https origin)}
+      - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET:?BETTER_AUTH_SECRET is required}
+      - ADMIN_EMAIL=${ADMIN_EMAIL:?ADMIN_EMAIL is required}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:?ADMIN_PASSWORD is required for the first start}
+      - ADMIN_NAME=${ADMIN_NAME:-Admin}
+      - WEBHOOK_SIGNING_ENCRYPTION_KEY=${WEBHOOK_SIGNING_ENCRYPTION_KEY:-}
+      - TRUSTED_PROXIES=${TRUSTED_PROXIES:-}
+      - SERVER_RETENTION_DAYS=${SERVER_RETENTION_DAYS:-7}
+      - SERVER_METADATA_RETENTION_DAYS=${SERVER_METADATA_RETENTION_DAYS:-30}
+      - AUDIT_RETENTION_DAYS=${AUDIT_RETENTION_DAYS:-90}
+    volumes:
+      - pwr-server-data:/app/data
+
+volumes:
+  pwr-server-data:
+    driver: local

@@ -1,0 +1,33 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.0
+      - run: bun install --frozen-lockfile
+      - run: bun run typecheck
+      - run: bun run lint
+      - run: bun run lint:rules
+      - run: bun run notices:check
+      - run: bun test
+      # Cross-compiles pwr and pwr-agent (Studio embedded) for macOS/Linux x64/arm64 + SHA256SUMS.
+      - run: bun scripts/release.ts "${GITHUB_REF_NAME}"
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" dist/release/* \
+            --title "PWR ${GITHUB_REF_NAME}" \
+            --notes-file CHANGELOG.md \
+            --verify-tag

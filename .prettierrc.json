@@ -1,0 +1,20 @@
+{
+  "semi": true,
+  "singleQuote": false,
+  "tabWidth": 2,
+  "trailingComma": "all",
+  "printWidth": 100,
+  "plugins": ["@ianvs/prettier-plugin-sort-imports", "prettier-plugin-tailwindcss"],
+  "importOrder": [
+    "^node:",
+    "<THIRD_PARTY_MODULES>",
+    "",
+    "^@pockrew/(.*)$",
+    "",
+    "^~/(.*)$",
+    "",
+    "^[./]"
+  ],
+  "importOrderTypeScriptVersion": "7.0.0",
+  "tailwindFunctions": ["cn"]
+}

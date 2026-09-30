@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["bun"],
+    "paths": {
+      "@agent/*": ["../agent/src/*"],
+      "@server/*": ["../server/src/*"],
+      "@core/*": ["../../packages/core/src/*"],
+      "~/*": ["./src/*"]
+    }
+  },
+  "include": ["src/**/*.ts"]
+}

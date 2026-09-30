@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+
+# Production build artifacts
+dist/
+apps/studio/dist/
+apps/admin/dist/
+apps/server/public/
+
+# SQLite databases & logs
+data/
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+*.db
+*.log
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# IDE & OS files
+.DS_Store
+.vscode/
+.idea/
+.cache/
+*.tsbuildinfo
+
+# Claude Code local settings
+.claude/settings.local.json
+
+# Local code-index tooling
+.codegraph/

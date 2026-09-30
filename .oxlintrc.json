@@ -1,0 +1,7 @@
+{
+  "plugins": ["typescript", "unicorn", "oxc", "jsx-a11y"],
+  "rules": {
+    "typescript/prefer-as-const": "off"
+  },
+  "ignorePatterns": ["**/node_modules/**", "**/dist/**"]
+}
