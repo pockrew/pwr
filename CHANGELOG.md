@@ -1,5 +1,23 @@
 # Changelog
 
+## v0.1.1 — 2026-09-30
+
+### Added
+
+- Windows support (x64, arm64): `pwr.exe` and `pwr-agent.exe` release binaries with SHA-256 checksums, and a verifying PowerShell installer (`irm https://raw.githubusercontent.com/pockrew/pwr/main/install.ps1 | iex`).
+- `pwr agent install-service` on Windows adds a per-user Run entry that starts the agent at sign-in (no admin rights); `uninstall-service` removes it.
+- Self-update on Windows: running binaries are renamed aside, replaced, and cleaned up on a later start.
+- The update status (`GET /updates`) includes `installCommand`, the reinstall one-liner for the agent's platform, shown by `pwr update` and Studio when an install cannot update itself.
+
+### Changed
+
+- `install.sh --from-source` and `install.ps1 -FromSource` build only the current platform (`bun scripts/release.ts --target <os-arch>`).
+
+### Fixed
+
+- `pwr agent stop` and `restart` on Windows shut the agent down gracefully through the local API instead of terminating it, and the agent no longer opens a console window when started in the background.
+- A self-update whose file swap fails puts back every binary it already replaced instead of leaving the install incomplete.
+
 ## v0.1.0 — 2026-09-28
 
 First public release.

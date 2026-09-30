@@ -2,7 +2,7 @@
   "name": "@pockrew/pwr-server",
   "private": true,
   "license": "SEE LICENSE IN LICENSE",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": {
     "name": "Thinh Dam Hung",
     "email": "thinhdh.dev@gmail.com"

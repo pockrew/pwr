@@ -3,7 +3,7 @@ declare const __PWR_VERSION__: string | undefined;
 
 /** Product version shown by the CLI, agent, MCP server and Studio. */
 export const PWR_VERSION: string =
-  typeof __PWR_VERSION__ === "string" ? __PWR_VERSION__ : "0.1.0-dev";
+  typeof __PWR_VERSION__ === "string" ? __PWR_VERSION__ : "0.1.1-dev";
 
 /** Public source repository (owner/name) that publishes release binaries and SHA256SUMS. */
 export const PWR_REPOSITORY = "pockrew/pwr";
