@@ -5,6 +5,7 @@ import { app } from "~/app";
 
 import { agentFiles } from "./data-dir";
 import { listenLocalApi } from "./listen";
+import { DEFAULT_AGENT_PORT, trustAgentPort } from "./local-access";
 
 const servers: { stop: (force?: boolean) => unknown }[] = [];
 const occupy = () => {
@@ -14,6 +15,8 @@ const occupy = () => {
 };
 afterEach(() => {
   for (const server of servers.splice(0)) server.stop(true);
+  // Test files share one process: restore the default trusted port for later suites.
+  trustAgentPort(DEFAULT_AGENT_PORT);
 });
 
 test("a busy default port falls back to a free one, recorded for the CLI and trusted for Studio", async () => {

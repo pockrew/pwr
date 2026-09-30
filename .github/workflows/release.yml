@@ -48,6 +48,9 @@ jobs:
         run: bun run lint:rules
       - if: steps.version.outputs.exists != 'true'
         run: bun run notices:check
+      # Server routing tests serve the Admin build from apps/server/public, so build first.
+      - if: steps.version.outputs.exists != 'true'
+        run: bun run build:server
       - if: steps.version.outputs.exists != 'true'
         run: bun test
       # Cross-compiles pwr and pwr-agent (Studio embedded) for macOS/Linux x64/arm64 + SHA256SUMS.
