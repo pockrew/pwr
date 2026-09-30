@@ -1,12 +1,16 @@
 name: Release
 
-# Publishes a GitHub release when a pull request is merged into main (direct pushes never release),
-# once per root package.json version. Bump "version" and add a matching "## vX.Y.Z" CHANGELOG
-# section in the PR to ship a new release; merges without a version bump are skipped.
+# Publishes a GitHub release, once per root package.json version, when:
+# - a pull request is merged into main (direct pushes to main never release), or
+# - a vX.Y.Z tag is pushed (scripts/publish-release.sh); it must match package.json.
+# Bump "version" and add a matching "## vX.Y.Z" CHANGELOG section to ship a new release;
+# merges without a version bump are skipped.
 on:
   pull_request:
     types: [closed]
     branches: [main]
+  push:
+    tags: ["v*"]
 
 permissions:
   contents: write
@@ -17,18 +21,23 @@ concurrency:
 
 jobs:
   release:
-    if: github.event.pull_request.merged == true
+    if: github.event_name == 'push' || github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ github.token }}
-      MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+      # The merge commit for a merged PR, the tagged commit for a tag push.
+      RELEASE_SHA: ${{ github.event.pull_request.merge_commit_sha || github.sha }}
     steps:
       - uses: actions/checkout@v7
         with:
-          ref: ${{ github.event.pull_request.merge_commit_sha }}
+          ref: ${{ env.RELEASE_SHA }}
       - id: version
         run: |
           tag="v$(jq -r .version package.json)"
+          if [ "${GITHUB_REF_TYPE}" = "tag" ] && [ "${GITHUB_REF_NAME}" != "${tag}" ]; then
+            echo "pushed tag ${GITHUB_REF_NAME} does not match package.json version ${tag}" >&2
+            exit 1
+          fi
           echo "tag=${tag}" >> "$GITHUB_OUTPUT"
           if gh release view "${tag}" > /dev/null 2>&1; then
             echo "${tag} is already released; skipping."
@@ -67,4 +76,4 @@ jobs:
           gh release create "${TAG}" dist/release/* \
             --title "PWR ${TAG}" \
             --notes-file notes.md \
-            --target "${MERGE_SHA}"
+            --target "${RELEASE_SHA}"
