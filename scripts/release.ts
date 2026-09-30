@@ -1,7 +1,9 @@
 /**
  * Builds release binaries: `pwr` (CLI) and `pwr-agent` (daemon with Studio embedded) for every
- * supported platform, plus SHA256SUMS. Usage: `bun scripts/release.ts [version]`
- * (defaults to the root package.json version). Output: dist/release/.
+ * supported platform (Windows binaries end in `.exe`), plus SHA256SUMS.
+ * Usage: `bun scripts/release.ts [version] [--target <os-arch>]`; the version defaults to the root
+ * package.json version, `--target` (e.g. `linux-x64`) builds one platform, as source installs do.
+ * Output: dist/release/.
  */
 import { createHash } from "node:crypto";
 import {
@@ -14,12 +16,14 @@ import {
   writeFileSync,
 } from "node:fs";
 import { join, relative } from "node:path";
+import { parseArgs } from "node:util";
+
+import { RELEASE_TARGETS, releaseAssetName } from "@pockrew/pwr-shared/libs";
 
 const ROOT = join(import.meta.dir, "..");
 const OUT = join(ROOT, "dist", "release");
 const STUDIO_DIST = join(ROOT, "apps", "studio", "dist");
 const MANIFEST = join(ROOT, "apps", "agent", "src", "platform", "studio-assets.ts");
-const TARGETS = ["darwin-arm64", "darwin-x64", "linux-x64", "linux-arm64"] as const;
 
 const packageVersion = (): string => {
   const parsed: unknown = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8"));
@@ -33,8 +37,19 @@ const packageVersion = (): string => {
   throw new Error("Root package.json has no version");
 };
 
-const version = (Bun.argv[2] ?? packageVersion()).replace(/^v/, "");
+const args = parseArgs({
+  args: Bun.argv.slice(2),
+  options: { target: { type: "string" } },
+  allowPositionals: true,
+});
+const version = (args.positionals[0] ?? packageVersion()).replace(/^v/, "");
 if (!/^\d+\.\d+\.\d+(-[\w.]+)?$/.test(version)) throw new Error(`Invalid version: ${version}`);
+const onlyTarget = RELEASE_TARGETS.find((target) => target === args.values.target);
+if (args.values.target !== undefined && !onlyTarget)
+  throw new Error(
+    `Unknown target ${args.values.target}; expected one of ${RELEASE_TARGETS.join(", ")}`,
+  );
+const targets = onlyTarget ? [onlyTarget] : RELEASE_TARGETS;
 
 /** Run a command from the repo root, failing the release on a non-zero exit. */
 const run = async (cmd: string[], env: Record<string, string> = {}) => {
@@ -80,7 +95,7 @@ try {
   writeStudioManifest();
   // 2. One CLI and one agent binary per platform.
   const define = ["--define", `__PWR_VERSION__=${JSON.stringify(version)}`];
-  for (const target of TARGETS) {
+  for (const target of targets) {
     for (const [name, entry] of [
       ["pwr", "apps/cli/src/index.ts"],
       ["pwr-agent", "apps/agent/src/index.ts"],
@@ -94,7 +109,7 @@ try {
         ...define,
         entry,
         "--outfile",
-        join(OUT, `${name}-${target}`),
+        join(OUT, releaseAssetName(name, target)),
       ]);
   }
 } finally {
@@ -105,7 +120,7 @@ try {
 for (const file of ["LICENSE", "THIRD_PARTY_NOTICES.txt"])
   copyFileSync(join(ROOT, file), join(OUT, file));
 
-// 4. Checksums for install.sh verification.
+// 4. Checksums for install.sh / install.ps1 and self-update verification.
 const sums = readdirSync(OUT)
   .filter((file) => file.startsWith("pwr"))
   .sort()

@@ -1,5 +1,4 @@
 import { formatBytes } from "@pockrew/pwr-core";
-import { PWR_INSTALL_COMMAND } from "@pockrew/pwr-shared/libs";
 import type { AgentUpdateMode, AgentUpdateStatus } from "@pockrew/pwr-shared/schemas";
 
 import {
@@ -87,7 +86,7 @@ export const executeUpdateCommand = async (options: IUpdateCommandOptions): Prom
     return;
   }
   if (status.unsupportedReason)
-    throw new Error(`${status.unsupportedReason} To reinstall: ${PWR_INSTALL_COMMAND}`);
+    throw new Error(`${status.unsupportedReason} To reinstall: ${status.installCommand}`);
 
   // 3. Install; the agent swaps binaries only after both downloads match SHA256SUMS.
   await readStatus(await client.updates.apply.$post());

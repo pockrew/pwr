@@ -6,7 +6,7 @@ import { app } from "./app";
 import { localDb } from "./db/client";
 import { tunnelManager } from "./modules/relays/service";
 import { runRetention, startRetentionTimer } from "./modules/storage/retention.service";
-import { startUpdateTimer } from "./modules/updates/service";
+import { removeReplacedBinaries, startUpdateTimer } from "./modules/updates/service";
 import { registerShutdown } from "./platform/lifecycle";
 import { listenLocalApi } from "./platform/listen";
 import { agentHostname } from "./platform/local-access";
@@ -36,6 +36,7 @@ tunnelManager.restoreConnections();
 const stopRetention = startRetentionTimer(tunnelManager.refreshIntake);
 
 // 4. Daily release check; `auto` mode installs and restarts through the graceful path below.
+removeReplacedBinaries();
 const stopUpdateChecks = startUpdateTimer();
 
 logger.info("Daemon active on {url}; MCP endpoint {url}/mcp", {

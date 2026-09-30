@@ -1,5 +1,13 @@
 import { createHash } from "node:crypto";
-import { mkdtempSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
+import {
+  mkdirSync,
+  mkdtempSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  statSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, expect, spyOn, test } from "bun:test";
@@ -72,4 +80,41 @@ test("a checksum mismatch replaces nothing and leaves no temporary files", async
   expect(readFileSync(join(dir, "pwr-agent"), "utf8")).toBe("old agent");
   expect(readFileSync(join(dir, "pwr"), "utf8")).toBe("old cli");
   expect(readdirSync(dir).sort()).toEqual(["pwr", "pwr-agent"]);
+});
+
+test("renaming running binaries aside (Windows) installs the new ones and keeps the old as .old", async () => {
+  writeFileSync(join(dir, "pwr.old"), "stale from an earlier update");
+  const assets = { "pwr-agent-test": "new agent", "pwr-test": "new cli" };
+  const fetchSpy = mockRelease(assets, {
+    "pwr-agent-test": sha("new agent"),
+    "pwr-test": sha("new cli"),
+  });
+  try {
+    await installRelease(release, binaries(), () => {}, true);
+  } finally {
+    fetchSpy.mockRestore();
+  }
+  expect(readFileSync(join(dir, "pwr-agent"), "utf8")).toBe("new agent");
+  expect(readFileSync(join(dir, "pwr"), "utf8")).toBe("new cli");
+  expect(readFileSync(join(dir, "pwr-agent.old"), "utf8")).toBe("old agent");
+  expect(readFileSync(join(dir, "pwr.old"), "utf8")).toBe("old cli");
+  expect(readdirSync(dir).sort()).toEqual(["pwr", "pwr-agent", "pwr-agent.old", "pwr.old"]);
+});
+
+test("a failed Windows swap restores the binaries it already replaced", async () => {
+  // A non-empty directory where the CLI's .old goes makes its swap fail after the agent's.
+  mkdirSync(join(dir, "pwr.old", "locked"), { recursive: true });
+  const assets = { "pwr-agent-test": "new agent", "pwr-test": "new cli" };
+  const fetchSpy = mockRelease(assets, {
+    "pwr-agent-test": sha("new agent"),
+    "pwr-test": sha("new cli"),
+  });
+  try {
+    await expect(installRelease(release, binaries(), () => {}, true)).rejects.toThrow();
+  } finally {
+    fetchSpy.mockRestore();
+  }
+  expect(readFileSync(join(dir, "pwr-agent"), "utf8")).toBe("old agent");
+  expect(readFileSync(join(dir, "pwr"), "utf8")).toBe("old cli");
+  expect(readdirSync(dir).sort()).toEqual(["pwr", "pwr-agent", "pwr.old"]);
 });

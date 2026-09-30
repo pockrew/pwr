@@ -1,7 +1,6 @@
 import { Show, type Component } from "solid-js";
 import { toast } from "solid-sonner";
 
-import { PWR_INSTALL_COMMAND } from "@pockrew/pwr-shared/libs";
 import type { AgentUpdateMode } from "@pockrew/pwr-shared/schemas";
 import { Badge, Button } from "@pockrew/pwr-ui/core";
 import { Copy, ExternalLink, Reload, Zap } from "@pockrew/pwr-ui/icons";
@@ -106,8 +105,8 @@ export const AgentUpdateSection: Component = () => {
     return `Downloading ${progress.asset}: ${formatBytes(progress.receivedBytes)}${total}`;
   };
 
-  const copyInstallCommand = () =>
-    navigator.clipboard.writeText(PWR_INSTALL_COMMAND).then(
+  const copyInstallCommand = (command: string) =>
+    navigator.clipboard.writeText(command).then(
       () => toast.success("Install command copied"),
       () => toast.error("Could not copy to the clipboard"),
     );
@@ -171,11 +170,11 @@ export const AgentUpdateSection: Component = () => {
                 <div class="bg-muted/30 border-border space-y-2 rounded-md border p-3 text-sm">
                   <p class="text-muted-foreground">{data().unsupportedReason}</p>
                   <div class="flex items-center justify-between gap-2 font-mono text-xs">
-                    <code class="text-foreground truncate">{PWR_INSTALL_COMMAND}</code>
+                    <code class="text-foreground truncate">{data().installCommand}</code>
                     <Button
                       variant="ghost"
                       size="icon-xs"
-                      onClick={copyInstallCommand}
+                      onClick={() => copyInstallCommand(data().installCommand)}
                       title="Copy install command"
                       aria-label="Copy install command"
                     >

@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
-import { join } from "node:path";
+import { basename, join } from "node:path";
 
 import { agentFilePaths, formatLogEntry, readAgentToken, readLogPage } from "@pockrew/pwr-core";
 
@@ -18,6 +18,40 @@ import { colorize, colors } from "~/ui/ansi";
 const SERVICE_LABEL = "dev.pockrew.pwr-agent";
 const launchAgentPath = () => join(homedir(), "Library", "LaunchAgents", `${SERVICE_LABEL}.plist`);
 const systemdUnitPath = () => join(homedir(), ".config", "systemd", "user", "pwr-agent.service");
+const WINDOWS_RUN_KEY = "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run";
+const WINDOWS_RUN_VALUE = "PWR Agent";
+
+/** Run `reg.exe` with the given arguments; true when it exits 0. */
+const reg = (args: string[]): boolean =>
+  Bun.spawnSync(["reg", ...args], { stdout: "ignore", stderr: "ignore" }).exitCode === 0;
+
+/**
+ * Windows autostart: a per-user Run entry (no admin rights) that runs `pwr agent start` at
+ * sign-in. There is no service manager to relaunch the agent, so it is not marked supervised and
+ * restarts itself; a crashed agent starts again at the next sign-in or `pwr` command that needs it.
+ */
+const installWindowsAutostart = (port: number | undefined): void => {
+  const cli = basename(process.execPath).startsWith("bun")
+    ? [process.execPath, Bun.main]
+    : [process.execPath];
+  const command = [...cli.map((part) => `"${part}"`), "agent", "start"];
+  if (port !== undefined) command.push("--port", String(port));
+  const value = command.join(" ");
+  if (!reg(["add", WINDOWS_RUN_KEY, "/v", WINDOWS_RUN_VALUE, "/t", "REG_SZ", "/d", value, "/f"]))
+    throw new Error(`Could not write ${WINDOWS_RUN_KEY}\\${WINDOWS_RUN_VALUE}`);
+  console.log(`Installed ${WINDOWS_RUN_KEY}\\${WINDOWS_RUN_VALUE}; the agent starts at sign-in.`);
+  console.log("Start it now with: pwr agent start");
+};
+
+const uninstallWindowsAutostart = (): void => {
+  if (!reg(["query", WINDOWS_RUN_KEY, "/v", WINDOWS_RUN_VALUE])) {
+    console.log("No agent service is installed.");
+    return;
+  }
+  if (!reg(["delete", WINDOWS_RUN_KEY, "/v", WINDOWS_RUN_VALUE, "/f"]))
+    throw new Error(`Could not remove ${WINDOWS_RUN_KEY}\\${WINDOWS_RUN_VALUE}`);
+  console.log(`Removed ${WINDOWS_RUN_KEY}\\${WINDOWS_RUN_VALUE}; a running agent keeps running.`);
+};
 
 const xml = (value: string) =>
   value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
@@ -34,12 +68,17 @@ const printLogs = async (limit: number): Promise<void> => {
 };
 
 /**
- * Write a per-user autostart unit (launchd on macOS, systemd --user on Linux) that runs the
- * agent binary; its process output goes beside its log. `PWR_AGENT_SUPERVISED` makes a Studio
- * restart exit non-zero so the service manager, not the agent, starts the new process. Only a
- * pinned port is written into the unit; otherwise the agent may move off a busy default port.
+ * Write a per-user autostart unit (launchd on macOS, systemd --user on Linux, a Run entry on
+ * Windows) that runs the agent; its process output goes beside its log. `PWR_AGENT_SUPERVISED`
+ * makes a Studio restart exit non-zero so the service manager, not the agent, starts the new
+ * process. Only a pinned port is written into the unit; otherwise the agent may move off a busy
+ * default port.
  */
 const installService = (port: number | undefined): void => {
+  if (process.platform === "win32") {
+    installWindowsAutostart(port);
+    return;
+  }
   const command = resolveAgentCommand();
   const { outputFile } = agentFilePaths();
   if (process.platform === "darwin") {
@@ -96,10 +135,14 @@ WantedBy=default.target
     console.log("Enable it now with: systemctl --user enable --now pwr-agent");
     return;
   }
-  throw new Error("install-service supports macOS (launchd) and Linux (systemd --user) only");
+  throw new Error("install-service supports macOS, Linux and Windows only");
 };
 
 const uninstallService = (): void => {
+  if (process.platform === "win32") {
+    uninstallWindowsAutostart();
+    return;
+  }
   const path = process.platform === "darwin" ? launchAgentPath() : systemdUnitPath();
   if (!existsSync(path)) {
     console.log("No agent service is installed.");

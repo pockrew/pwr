@@ -20,6 +20,10 @@ test("status explains why a source run cannot update itself", async () => {
   const { data } = await call("/updates");
   expect(data).toMatchObject({ mode: "manual", state: "idle", updateAvailable: false });
   expect(data.unsupportedReason).toContain("source");
+  // The reinstall fallback matches the agent's platform, not the browser's.
+  expect(data.installCommand).toContain(
+    process.platform === "win32" ? "install.ps1" : "install.sh",
+  );
   expect((await app.request("/updates/apply", { method: "POST" })).status).toBe(409);
 });
 

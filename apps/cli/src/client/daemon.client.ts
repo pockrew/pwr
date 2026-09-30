@@ -1,7 +1,6 @@
 import { hc } from "hono/client";
 
 import type { AgentAppType } from "@pockrew/pwr-agent/rpc";
-import { readAgentToken } from "@pockrew/pwr-core";
 import {
   AgentDeliveryStreamSchema,
   WebhookEventSchema,
@@ -14,9 +13,10 @@ import {
   type WebhookEvent,
 } from "@pockrew/pwr-shared/schemas";
 
-import { agentPort } from "./daemon.lifecycle";
+import { agentAuthHeaders, agentPort } from "./daemon.lifecycle";
 
 export {
+  agentAuthHeaders,
   agentPort,
   checkAgentHealth,
   ensureAgentDaemonRunning,
@@ -28,12 +28,6 @@ export {
  * Type alias for the strongly-typed Hono RPC client connected to the Agent daemon.
  */
 export type AgentRpcClient = ReturnType<typeof hc<AgentAppType>>;
-
-/** Local API token header, read from the agent's owner-only token file on every request. */
-export const agentAuthHeaders = (): Record<string, string> => {
-  const token = readAgentToken();
-  return token ? { authorization: `Bearer ${token}` } : {};
-};
 
 /**
  * Tunnel descriptor structure returned by the Agent relay management endpoint.

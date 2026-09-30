@@ -8,9 +8,6 @@ export const PWR_VERSION: string =
 /** Public source repository (owner/name) that publishes release binaries and SHA256SUMS. */
 export const PWR_REPOSITORY = "pockrew/pwr";
 
-/** One-line installer (downloads a verified release binary); the fallback when self-update cannot run. */
-export const PWR_INSTALL_COMMAND = `curl -fsSL https://raw.githubusercontent.com/${PWR_REPOSITORY}/main/install.sh | bash`;
-
 const parseVersion = (version: string): [number[], string | null] => {
   const [core = "", prerelease] = version.replace(/^v/, "").split("-", 2);
   return [core.split(".").map((part) => Number.parseInt(part, 10) || 0), prerelease ?? null];

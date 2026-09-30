@@ -59,7 +59,7 @@ pwr status
 pwr studio
 ```
 
-The installer verifies published binary checksums. Add `~/.local/bin` to `PATH` if your shell does not find `pwr`. To build from a checkout instead, run `./install.sh --from-source` with Bun installed. `pwr agent install-service` can start the daemon on login using launchd on macOS or `systemd --user` on Linux.
+On Windows, run `irm https://raw.githubusercontent.com/pockrew/pwr/main/install.ps1 | iex` in PowerShell instead, and pipe the key with `$env:RELAY_KEY | pwr connect …`. The installer verifies published binary checksums. Add `~/.local/bin` to `PATH` if your shell does not find `pwr`. To build from a checkout instead, run `./install.sh --from-source` (Windows: `.\install.ps1 -FromSource`) with Bun installed. `pwr agent install-service` can start the daemon on login using launchd on macOS, `systemd --user` on Linux, or a per-user Run registry entry on Windows.
 
 `$RELAY_KEY` is the **outbound** key. Passing it through stdin keeps it out of command arguments. `pwr connect` saves the connection and key in the local agent; `pwr status` shows whether the WebSocket subscription is connected or still retrying. `pwr studio` opens the local inspector with an HttpOnly session cookie. The agent listens on loopback only.
 

@@ -77,7 +77,7 @@ if [[ "$FROM_SOURCE" == 1 ]]; then
   [[ -f "$ROOT/package.json" && -d "$ROOT/apps/agent" ]] || fail "--from-source must run from a PWR checkout"
   command -v bun >/dev/null 2>&1 || fail "--from-source needs Bun (https://bun.sh)"
   info "Building from source in $ROOT"
-  (cd "$ROOT" && bun install --frozen-lockfile && bun scripts/release.ts)
+  (cd "$ROOT" && bun install --frozen-lockfile && bun scripts/release.ts --target "$TARGET")
   cp "$ROOT/dist/release/pwr-${TARGET}" "$TMP/pwr"
   cp "$ROOT/dist/release/pwr-agent-${TARGET}" "$TMP/pwr-agent"
 else

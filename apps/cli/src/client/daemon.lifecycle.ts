@@ -4,7 +4,7 @@ import { basename, dirname, resolve } from "node:path";
 import { hc } from "hono/client";
 
 import type { AgentAppType } from "@pockrew/pwr-agent/rpc";
-import { agentFilePaths, readRecordedAgentPort } from "@pockrew/pwr-core";
+import { agentFilePaths, readAgentToken, readRecordedAgentPort } from "@pockrew/pwr-core";
 import type { AgentStorageStatus } from "@pockrew/pwr-shared/schemas";
 
 /**
@@ -19,6 +19,12 @@ export interface IAgentHealth {
   activeTunnelsCount?: number | undefined;
   totalTunnelsCount?: number | undefined;
 }
+
+/** Local API token header, read from the agent's owner-only token file on every request. */
+export const agentAuthHeaders = (): Record<string, string> => {
+  const token = readAgentToken();
+  return token ? { authorization: `Bearer ${token}` } : {};
+};
 
 /** The agent's preferred port; it moves to a free port when this one is busy and none is pinned. */
 export const DEFAULT_AGENT_PORT = 18788;
@@ -99,6 +105,8 @@ export const startAgentDaemon = async (port?: number): Promise<boolean> => {
     const child = spawn(command, args, {
       env: pinned === undefined ? process.env : { ...process.env, PWR_AGENT_PORT: String(pinned) },
       detached: true,
+      // Without this a detached child opens its own console window on Windows.
+      windowsHide: true,
       stdio: ["ignore", log, log],
     });
     child.unref();
@@ -138,14 +146,39 @@ export const agentDaemonPid = (): number | null => {
 };
 
 /**
- * Ask the running agent to shut down gracefully (SIGTERM) and wait for it to exit, so in-flight
- * target calls commit their results first.
+ * Start the agent's graceful shutdown. SIGTERM on macOS/Linux; Windows has no SIGTERM (a signal
+ * terminates the process at once), so it asks the local API instead. Only when the API does not
+ * answer is the process killed; the agent commits before every ACK, so stored work resumes on
+ * the next start.
+ */
+const requestStop = async (pid: number): Promise<void> => {
+  if (process.platform !== "win32") {
+    process.kill(pid, "SIGTERM");
+    return;
+  }
+  const client = hc<AgentAppType>(`http://127.0.0.1:${agentPort()}`, {
+    headers: agentAuthHeaders,
+  });
+  const response = await client.agent.stop
+    .$post({}, { init: { signal: AbortSignal.timeout(5_000) } })
+    .catch(() => null);
+  if (response?.ok) return;
+  try {
+    process.kill(pid);
+  } catch {
+    // Already exited while the request was pending.
+  }
+};
+
+/**
+ * Ask the running agent to shut down gracefully and wait for it to exit, so in-flight target
+ * calls commit their results first.
  * @returns "stopped", "not_running", or "timeout" if it is still alive after 15s.
  */
 export const stopAgentDaemon = async (): Promise<"stopped" | "not_running" | "timeout"> => {
   const pid = agentDaemonPid();
   if (pid === null) return "not_running";
-  process.kill(pid, "SIGTERM");
+  await requestStop(pid);
   for (let i = 0; i < 150; i += 1) {
     await Bun.sleep(100);
     if (agentDaemonPid() === null) return "stopped";

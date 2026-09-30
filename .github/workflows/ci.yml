@@ -25,3 +25,55 @@ jobs:
       - run: bun run build:studio
       - run: bun run build:server
       - run: bun test
+
+  # Windows-only behavior of the compiled binaries: graceful stop through the local API (no
+  # SIGTERM), the autostart Run entry, and self-update renaming a running .exe aside.
+  windows:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.0
+      - run: bun install --frozen-lockfile
+      - run: |
+          bun build --compile apps/cli/src/index.ts --outfile dist/pwr.exe
+          bun build --compile apps/agent/src/index.ts --outfile dist/pwr-agent.exe
+      - name: Agent lifecycle
+        run: |
+          $ErrorActionPreference = "Stop"
+          # A throwaway data directory; the `runner` context is not available in job-level env.
+          $env:AGENT_DB_FILE_NAME = Join-Path $env:RUNNER_TEMP "pwr\agent.db"
+          $pwr = Resolve-Path dist\pwr.exe
+          $log = Join-Path $env:RUNNER_TEMP "pwr\logs\agent.log"
+          function Invoke-Pwr { & $pwr @args; if ($LASTEXITCODE) { throw "pwr $args exited $LASTEXITCODE" } }
+
+          # 1. Start and stop: the stop must take the graceful path, not a process kill.
+          Invoke-Pwr agent start
+          Invoke-Pwr agent status
+          Invoke-Pwr agent stop
+          if (-not (Select-String -Path $log -Pattern "graceful shutdown" -Quiet)) { throw "stop was not graceful" }
+          if ((& $pwr agent status | Out-String) -notmatch "not running") { throw "agent still running" }
+
+          # 2. Self-update: a running agent .exe can be renamed aside and replaced, and the next
+          #    start removes the .old file.
+          Invoke-Pwr agent start
+          Rename-Item dist\pwr-agent.exe pwr-agent.exe.old
+          Copy-Item dist\pwr-agent.exe.old dist\pwr-agent.exe
+          Invoke-Pwr agent restart
+          Start-Sleep -Seconds 2
+          if (Test-Path dist\pwr-agent.exe.old) { throw "replaced binary was not removed on start" }
+          Invoke-Pwr agent stop
+
+          # 3. Autostart entry.
+          $key = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run"
+          Invoke-Pwr agent install-service --port 18799
+          $entry = (Get-ItemProperty $key)."PWR Agent"
+          if ($entry -notmatch "agent start --port 18799") { throw "unexpected Run entry: $entry" }
+          Invoke-Pwr agent uninstall-service
+          if ((Get-ItemProperty $key)."PWR Agent") { throw "Run entry not removed" }
+      - if: failure()
+        run: Get-Content "$env:RUNNER_TEMP\pwr\logs\*" -ErrorAction SilentlyContinue

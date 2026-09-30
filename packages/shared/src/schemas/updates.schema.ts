@@ -24,4 +24,6 @@ export interface AgentUpdateStatus {
   progress: { asset: string; receivedBytes: number; totalBytes: number | null } | null;
   /** Null when this install can update itself; otherwise why not (source run, read-only dir…). */
   unsupportedReason: string | null;
+  /** One-line installer for the agent's platform; the fallback when it cannot update itself. */
+  installCommand: string;
 }

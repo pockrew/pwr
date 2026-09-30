@@ -30,7 +30,13 @@ macOS and Linux (x64, arm64):
 curl -fsSL https://raw.githubusercontent.com/pockrew/pwr/main/install.sh | bash
 ```
 
-The installer downloads `pwr` and `pwr-agent` from [GitHub Releases](https://github.com/pockrew/pwr/releases), verifies them against `SHA256SUMS`, and installs to `~/.local/bin` (`--prefix <dir>` to change, `--version vX.Y.Z` to pin). Studio is embedded in `pwr-agent`. To build from a checkout instead: `./install.sh --from-source` (requires [Bun](https://bun.sh)).
+Windows (x64, arm64), in PowerShell:
+
+```powershell
+irm https://raw.githubusercontent.com/pockrew/pwr/main/install.ps1 | iex
+```
+
+The installer downloads `pwr` and `pwr-agent` from [GitHub Releases](https://github.com/pockrew/pwr/releases), verifies them against `SHA256SUMS`, and installs to `~/.local/bin` (`--prefix <dir>` to change, `--version vX.Y.Z` to pin). On Windows it installs to `%LOCALAPPDATA%\Programs\pwr` and adds it to the user `PATH` (`-Prefix`, `-Version`). Studio is embedded in `pwr-agent`. To build from a checkout instead: `./install.sh --from-source` or `.\install.ps1 -FromSource` (requires [Bun](https://bun.sh)).
 
 ## Run the server
 
@@ -56,7 +62,7 @@ Run it behind a TLS-terminating reverse proxy, set `PUBLIC_URL` to its `https://
 
 3. Point the provider at `https://hooks.example.com/ingress/my-tunnel/<collection-id>` with the inbound `x-api-key`. Providers that cannot add a header use signature verification instead (Admin → tunnel → **Ingress authentication**): GitHub, Stripe, Standard Webhooks/Svix, Shopify, Slack, or a custom HMAC. An ingress URL always needs a collection ID or `/target/<path>`.
 
-`pwr agent install-service` starts the agent on login (launchd on macOS, `systemd --user` on Linux). `pwr help` lists all commands.
+`pwr agent install-service` starts the agent on login (launchd on macOS, `systemd --user` on Linux, a per-user Run entry on Windows). `pwr help` lists all commands.
 
 ## Security model
 
@@ -72,7 +78,7 @@ PWR delivers **at least once** to your target. Every target request carries `X-P
 
 ## Known limits (v0.1)
 
-- macOS and Linux only; no Windows build.
+- On Windows, `install-service` has no service manager behind it: a crashed agent is not relaunched until the next sign-in or `pwr` command that needs it, and a console window shows briefly at sign-in.
 - Failed target calls are not retried automatically, and there is no bulk replay.
 - Deliveries on one tunnel run sequentially; the target timeout is 10 seconds.
 - One server process (in-memory relay registry and rate limits) and one admin account.

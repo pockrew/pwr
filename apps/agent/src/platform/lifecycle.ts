@@ -39,6 +39,8 @@ const spawnReplacement = async (): Promise<void> => {
     const child = spawn(process.execPath, selfArgs(), {
       env: { ...process.env, [REPLACES_PID_ENV]: String(process.pid) },
       detached: true,
+      // Without this a detached child opens its own console window on Windows.
+      windowsHide: true,
       stdio: ["ignore", log, log],
     });
     await new Promise<void>((resolve, reject) => {
